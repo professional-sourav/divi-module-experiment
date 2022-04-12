@@ -1,3 +1,3 @@
-import Input from './Input/Input';
+import SampleInput from './SampleInput/SampleInput';
 
-export default [Input];
+export default [SampleInput];

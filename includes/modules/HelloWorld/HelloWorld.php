@@ -1,9 +1,6 @@
 <?php
 
-class CSH_HelloWorld extends ET_Builder_Module {
-
-	public $slug       = 'csh_hello_world';
-	public $vb_support = 'on';
+class CSH_HelloWorld extends ET_Builder_Module_Shop {
 
 	protected $module_credits = array(
 		'module_uri' => '',
@@ -12,24 +9,51 @@ class CSH_HelloWorld extends ET_Builder_Module {
 	);
 
 	public function init() {
-		$this->name = esc_html__( 'Hello World', 'csh-shop-extension' );
+
+		$this->slug       	= 'csh_hello_world';
+		$this->vb_support 	= 'on';
+		$this->name 		= esc_html__( 'Hello World', 'csh-shop-extension' );
+		$this->folder_name 	= 'et_pb_woo_modules';
 	}
 
 	public function get_fields() {
-		return array(
-			'content' => array(
-				'label'           => esc_html__( 'Content', 'csh-shop-extension' ),
-				'type'            => 'tiny_mce',
-				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'Content entered here will appear inside the module.', 'csh-shop-extension' ),
-				'toggle_slug'     => 'main_content',
+
+		$fields = parent::get_fields();
+		$fields['ajax_pagination'] = array(
+			'label'            => esc_html__( 'AJAX Pagination', 'csh_hello_world' ),
+			'type'             => 'yes_no_button',
+			'option_category'  => 'configuration',
+			'options'          => array(
+				'on'  => et_builder_i18n( 'Yes' ),
+				'off' => et_builder_i18n( 'No' ),
 			),
+			'default'          => 'off',
+			'description'      => esc_html__( 'Turn AJAX functionality of pagination on and off.', 'csh_hello_world' ),
+			'computed_affects' => array(
+				'__shop',
+			),
+			'toggle_slug'      => 'elements',
+			'mobile_options'   => true,
+			'hover'            => 'tabs',
 		);
+
+		return $fields;
 	}
 
-	public function render( $attrs, $content = null, $render_slug ) {
-		return sprintf( '<h1>%1$s</h1>', $this->props['content'] );
+	/**
+	 * Renders the module output.
+	 *
+	 * @param  array  $attrs       List of attributes.
+	 * @param  string $content     Content being processed.
+	 * @param  string $render_slug Slug of module that is used for rendering output.
+	 *
+	 * @return string
+	 */
+	public function render( $attrs, $content, $render_slug ) {
+
+		return parent::render( $attrs, $content, $render_slug );
 	}
+
 }
 
 new CSH_HelloWorld;

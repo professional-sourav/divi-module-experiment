@@ -4,9 +4,9 @@ import React, { Component } from 'react';
 // Internal Dependencies
 import './style.css';
 
-class Input extends Component {
+class SampleInput extends Component {
 
-  static slug = 'csh_input';
+  static slug = 'csh_sample_input';
 
   /**
    * Handle input value change.
@@ -20,11 +20,11 @@ class Input extends Component {
   render() {
     return(
       <input
-        id={`csh-input-${this.props.name}`}
+        id={`csh-sample-input-${this.props.name}`}
         name={this.props.name}
         value={this.props.value}
         type='text'
-        className='csh-input'
+        className='csh-sample-input'
         onChange={this._onChange}
         placeholder='Your text here ...'
       />
@@ -32,4 +32,4 @@ class Input extends Component {
   }
 }
 
-export default Input;
+export default SampleInput;

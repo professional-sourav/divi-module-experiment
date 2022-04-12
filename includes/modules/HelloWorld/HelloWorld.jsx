@@ -11,11 +11,15 @@ class HelloWorld extends Component {
 
   render() {
     const Content = this.props.content;
+    console.log(this.props);
 
     return (
+      <>
       <h1>
-        <Content/>
+        Here is the Output
       </h1>
+      <div dangerouslySetInnerHTML={{ __html: this.props.__page }}></div>
+      </>
     );
   }
 }
