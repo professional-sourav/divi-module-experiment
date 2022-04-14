@@ -4,10 +4,10 @@ jQuery(function($) {
 
     const ajax_pagination_options = shop_extension_options;
 
-    // console.log( ajax_pagination_options, ajax_pagination_options['cwe_ajax_pagination'] );
+    console.log( ajax_pagination_options, ajax_pagination_options['ajax_pagination'] );
 
-    // if ( ajax_pagination_options['cwe_ajax_pagination']['desktop'] === "on" ) {
-    if ( ajax_pagination_options['cwe_ajax_pagination'] === "on" ) {
+    // if ( ajax_pagination_options['ajax_pagination']['desktop'] === "on" ) {
+    if ( ajax_pagination_options['ajax_pagination'] === "on" ) {
 
         $(document).on(
             'click', 

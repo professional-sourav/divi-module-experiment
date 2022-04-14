@@ -44,57 +44,51 @@ class CSH_ShopExtension extends DiviExtension {
 
 		parent::__construct( $name, $args );
 
+		add_action( 'wp_enqueue_scripts', [ $this, 'loadScripts' ] );
+
 		add_action( 'et_save_post', [ $this, 'saveOptionETPost' ] );
 
 		add_filter( 'woocommerce_shortcode_products_query', [ $this, 'fetchUpsellProducts' ] );
-
-		$this->loadOptions();
-
-		add_action( 'wp_enqueue_scripts', [ $this, 'loadScripts' ] );
-	}
-
-	private function loadOptions() {
-
-		$this->options['cwe_ajax_pagination']  = get_option('csh_custom_woo_products_ajax_pagination');
 	}
 
 
 	public function loadScripts()
 	{
+		$this->options['ajax_pagination']  = get_option('csh_custom_woo_products_ajax_pagination');
+
 		wp_localize_script( "{$this->name}-frontend-bundle", 'shop_extension_options', $this->options );
 	}
 
 
 	public function saveOptionETPost() {
 
-		$options     		= isset( $_POST['options'] ) ? $_POST['options'] : array(); // phpcs:ignore ET.Sniffs.ValidatedSanitizedInput -- $_POST['options'] is an array, it's value sanitization is done  at the time of accessing value.
-		$layout_type 		= isset( $_POST['layout_type'] ) ? sanitize_text_field( $_POST['layout_type'] ) : '';
-		$shortcode_data     = isset( $_POST['modules'] ) ? json_decode( stripslashes( $_POST['modules'] ), true ) : array(); // phpcs:ignore ET.Sniffs.ValidatedSanitizedInput -- modules string will be sanitized at the time of saving in the db.
+		$shortcode_data     = isset( $_POST['modules'] ) ? json_decode( stripslashes( $_POST['modules'] ), true ) : array(); 
 		
-		$option_value = $this->get_attr_data( $shortcode_data[0]['content'], ["csh_custom_woo_products", "cwe_ajax_pagination"] );
+		$option_value = $this->get_attr_data( $shortcode_data[0]['content'], ["csh_custom_woo_products", "ajax_pagination"] );
 
 		update_option( 'csh_custom_woo_products_ajax_pagination', $option_value );
 	}
 
 	public function fetchUpsellProducts( $args ) {
 
-		if ( $_POST['depends_on']['type'] === "upsells" ) {
+		// if ( $_POST['depends_on']['type'] === "upsells" ) {
 
-			$upsell_id_arr 	= $this->getAllUpsellIds();
+			$items 	= $this->getAllUpsellIds();
 
-			if ( !empty( $upsell_id_arr ) ) {
+			if ( !empty( $items['upsells'] ) ) {
 
 				$ids_arr = [];
 
 				// collect all the ids in a single array
-				foreach ( $upsell_id_arr as $upsell_ids ) {
+				foreach ( $items['upsells'] as $upsell_ids ) {
 
 					$ids_arr = array_merge( $ids_arr, $upsell_ids );
 				}
 
-				$args['post__in'] = array_unique( $ids_arr );
+				$args['post__in'] 		= array_unique( $ids_arr );
+				$args['post__not_in'] 	= $items['products'];
 			}
-		}
+		// }
 	
 		return $args;
 	}
@@ -106,7 +100,8 @@ class CSH_ShopExtension extends DiviExtension {
 	 */
 	private function getAllUpsellIds() {
 
-		$upsells = [];
+		$upsells 	= [];
+		$products 	= [];
 
 		$args = array(
 			'post_type'      => 'product',
@@ -116,17 +111,24 @@ class CSH_ShopExtension extends DiviExtension {
 		$loop = new WP_Query( $args );
 	
 		while ( $loop->have_posts() ) : $loop->the_post();
+
 			global $product;
 
-			$upsell_ids = get_post_meta( get_the_ID(), '_upsell_ids',true);
-			if ( is_array( $upsell_ids ) )
-				$upsells[] = $upsell_ids;
+			$product_id = $product->is_type('variation') ? $product->get_parent_id() : $product->get_id();
+    		$product 	= wc_get_product( $product_id );
+    		$upsell_ids = $product->get_upsell_ids();
+			
+			if ( is_array( $upsell_ids ) ) {
+
+				$upsells[] 	= $upsell_ids;
+				$products[] = $product_id;
+			}
 		
 		endwhile;
 	
 		wp_reset_query();
 
-		return $upsells;
+		return ["products" => $products, "upsells" => $upsells];
 	}
 
 	private function get_attr_data($shortcode_data, $attr) {

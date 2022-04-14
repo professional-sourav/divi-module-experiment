@@ -34,7 +34,7 @@ class CSH_CustomWooProducts extends ET_Builder_Module_Shop {
 				'__shop',
 			),
 			'toggle_slug'      => 'elements',
-			'mobile_options'   => true,
+			'mobile_options'   => false,
 			'hover'            => 'tabs',
 		);
 
