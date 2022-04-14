@@ -9,7 +9,10 @@ jQuery(function($) {
     // if ( ajax_pagination_options['ajax_pagination']['desktop'] === "on" ) {
     if ( ajax_pagination_options['ajax_pagination'] === "on" ) {
 
-        $(document).on('click', '.woocommerce .csh_hello_world nav.woocommerce-pagination ul li a', function(e) {
+        $(document).on(
+            'click', 
+            '.woocommerce .csh_hello_world nav.woocommerce-pagination ul li a, .csh_hello_world .woocommerce nav.woocommerce-pagination ul li a', 
+            function(e) {
 
             e.preventDefault();
 
