@@ -5,23 +5,19 @@ import React, { Component } from 'react';
 import './style.css';
 
 
-class HelloWorld extends Component {
+class CustomWooProducts extends Component {
 
-  static slug = 'csh_hello_world';
+  static slug = 'csh_custom_woo_products';
 
   render() {
     const Content = this.props.content;
-    console.log(this.props);
 
     return (
-      <>
-      <h1>
-        Here is the Output
-      </h1>
+      <>      
       <div dangerouslySetInnerHTML={{ __html: this.props.__page }}></div>
       </>
     );
   }
 }
 
-export default HelloWorld;
+export default CustomWooProducts;

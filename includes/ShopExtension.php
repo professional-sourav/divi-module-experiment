@@ -46,6 +46,8 @@ class CSH_ShopExtension extends DiviExtension {
 
 		add_action( 'et_save_post', [ $this, 'saveOptionETPost' ] );
 
+		add_filter( 'woocommerce_shortcode_products_query', [ $this, 'fetchUpsellProducts' ] );
+
 		$this->loadOptions();
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'loadScripts' ] );
@@ -53,7 +55,7 @@ class CSH_ShopExtension extends DiviExtension {
 
 	private function loadOptions() {
 
-		$this->options['ajax_pagination']  = get_option('custom_ajax_pagination');
+		$this->options['cwe_ajax_pagination']  = get_option('csh_custom_woo_products_ajax_pagination');
 	}
 
 
@@ -69,11 +71,63 @@ class CSH_ShopExtension extends DiviExtension {
 		$layout_type 		= isset( $_POST['layout_type'] ) ? sanitize_text_field( $_POST['layout_type'] ) : '';
 		$shortcode_data     = isset( $_POST['modules'] ) ? json_decode( stripslashes( $_POST['modules'] ), true ) : array(); // phpcs:ignore ET.Sniffs.ValidatedSanitizedInput -- modules string will be sanitized at the time of saving in the db.
 		
-		$option_value = $this->get_attr_data( $shortcode_data[0]['content'], ["csh_hello_world", "ajax_pagination"] );
+		$option_value = $this->get_attr_data( $shortcode_data[0]['content'], ["csh_custom_woo_products", "cwe_ajax_pagination"] );
 
-		update_option( 'custom_ajax_pagination', $option_value );
+		update_option( 'csh_custom_woo_products_ajax_pagination', $option_value );
 	}
 
+	public function fetchUpsellProducts( $args ) {
+
+		if ( $_POST['depends_on']['type'] === "upsells" ) {
+
+			$upsell_id_arr 	= $this->getAllUpsellIds();
+
+			if ( !empty( $upsell_id_arr ) ) {
+
+				$ids_arr = [];
+
+				// collect all the ids in a single array
+				foreach ( $upsell_id_arr as $upsell_ids ) {
+
+					$ids_arr = array_merge( $ids_arr, $upsell_ids );
+				}
+
+				$args['post__in'] = array_unique( $ids_arr );
+			}
+		}
+	
+		return $args;
+	}
+
+
+
+	/**
+	 * Return upsell product ids as string
+	 */
+	private function getAllUpsellIds() {
+
+		$upsells = [];
+
+		$args = array(
+			'post_type'      => 'product',
+			'posts_per_page' => -1
+		);
+	
+		$loop = new WP_Query( $args );
+	
+		while ( $loop->have_posts() ) : $loop->the_post();
+			global $product;
+
+			$upsell_ids = get_post_meta( get_the_ID(), '_upsell_ids',true);
+			if ( is_array( $upsell_ids ) )
+				$upsells[] = $upsell_ids;
+		
+		endwhile;
+	
+		wp_reset_query();
+
+		return $upsells;
+	}
 
 	private function get_attr_data($shortcode_data, $attr) {
 		    

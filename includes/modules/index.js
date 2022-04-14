@@ -1,3 +1,3 @@
-import HelloWorld from './HelloWorld/HelloWorld';
+import CustomWooProducts from './CustomWooProducts/CustomWooProducts';
 
-export default [HelloWorld];
+export default [CustomWooProducts];

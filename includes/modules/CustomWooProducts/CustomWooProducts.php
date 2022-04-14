@@ -1,6 +1,6 @@
 <?php
 
-class CSH_HelloWorld extends ET_Builder_Module_Shop {
+class CSH_CustomWooProducts extends ET_Builder_Module_Shop {
 
 	protected $module_credits = array(
 		'module_uri' => '',
@@ -10,17 +10,18 @@ class CSH_HelloWorld extends ET_Builder_Module_Shop {
 
 	public function init() {
 
-		$this->slug       	= 'csh_hello_world';
+		$this->slug       	= 'csh_custom_woo_products';
 		$this->vb_support 	= 'on';
-		$this->name 		= esc_html__( 'Hello World', 'csh-shop-extension' );
+		$this->name 		= esc_html__( 'Custom Woo Products', 'csh-shop-extension' );
 		$this->folder_name 	= 'et_pb_woo_modules';
 	}
 
 	public function get_fields() {
 
 		$fields = parent::get_fields();
+		$fields['type']['options']['upsells'] = __("Upsell Products");
 		$fields['ajax_pagination'] = array(
-			'label'            => esc_html__( 'AJAX Pagination', 'csh_hello_world' ),
+			'label'            => esc_html__( 'AJAX Pagination', 'csh_custom_woo_products' ),
 			'type'             => 'yes_no_button',
 			'option_category'  => 'configuration',
 			'options'          => array(
@@ -28,7 +29,7 @@ class CSH_HelloWorld extends ET_Builder_Module_Shop {
 				'off' => et_builder_i18n( 'No' ),
 			),
 			'default'          => 'off',
-			'description'      => esc_html__( 'Turn AJAX functionality of pagination on and off.', 'csh_hello_world' ),
+			'description'      => esc_html__( 'Turn AJAX functionality of pagination on and off.', 'csh_custom_woo_products' ),
 			'computed_affects' => array(
 				'__shop',
 			),
@@ -56,4 +57,4 @@ class CSH_HelloWorld extends ET_Builder_Module_Shop {
 
 }
 
-new CSH_HelloWorld;
+new CSH_CustomWooProducts;
